@@ -1,27 +1,52 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session
+# app/routers/admin.py
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import RedirectResponse
+from fastapi.templating import Jinja2Templates
+from sqlmodel import Session, select, func
 from app.database import get_session
-from app.models import Product
-from app.services.dual_write import (
-    create_product_dual_write,
-    update_product_dual_write,
-    delete_product_dual_write
-)
+from app.models import User, Event, Recommendation
+from app.services.scheduler import process_pending_user_events
 
-router = APIRouter(prefix="/admin/products", tags=["Admin Products"])
+router = APIRouter(tags=["Admin"])
+templates = Jinja2Templates(directory="app/templates")
 
-@router.post("/", response_model=Product, status_code=status.HTTP_201_CREATED)
-def create_product(product: Product, session: Session = Depends(get_session)):
-    return create_product_dual_write(product, session)
 
-@router.put("/{product_id}", response_model=Product)
-def update_product(product_id: int, product_data: dict, session: Session = Depends(get_session)):
-    try:
-        return update_product_dual_write(product_id, product_data, session)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+@router.get("/admin")
+async def render_admin_dashboard(
+    request: Request,
+    session: Session = Depends(get_session)
+):
+    # Fetch metrics
+    user_count = session.exec(select(func.count(User.id))).one()
+    event_count = session.exec(select(func.count(Event.id))).one()
+    rec_count = session.exec(select(func.count(Recommendation.id))).one()
 
-@router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_product(product_id: int, session: Session = Depends(get_session)):
-    delete_product_dual_write(product_id, session)
-    return None
+    # Recent activity logs
+    recent_events = session.exec(
+        select(Event).order_by(Event.id.desc()).limit(15)
+    ).all()
+
+    recent_recommendations = session.exec(
+        select(Recommendation).order_by(Recommendation.id.desc()).limit(10)
+    ).all()
+
+    return templates.TemplateResponse(
+        "admin.html",
+        {
+            "request": request,
+            "metrics": {
+                "user_count": user_count,
+                "event_count": event_count,
+                "recommendation_count": rec_count,
+            },
+            "recent_events": recent_events,
+            "recent_recommendations": recent_recommendations,
+        }
+    )
+
+
+@router.post("/trigger-scheduler")
+async def manual_trigger_scheduler():
+    """Manually triggers the background scheduler pipeline."""
+    process_pending_user_events()
+    return RedirectResponse(url="/api/admin/admin", status_code=303)
