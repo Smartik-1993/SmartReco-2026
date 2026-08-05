@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - SmartReco AI{% endblock %}
+
+{% block content %}
+
+  
+  
+    
+      SmartReco System Operations
+      Monitor ingestion queues, database stats, and trigger manual evaluation runs.
+    
+    
+    
+    
+      
+        ⚡ Trigger Background Scheduler
+      
+    
+  
+
+  
+  
+    
+      Total Users
+      {{ metrics.user_count }}
+    
+    
+    
+      Events Logged
+      {{ metrics.event_count }}
+    
+
+    
+      Recommendations Generated
+      {{ metrics.recommendation_count }}
+    
+
+    
+      Mesh API Client
+      
+         Active
+      
+    
+  
+
+  
+  
+    
+    
+    
+      
+        📥 Recent Behavioral Events Log
+      
+      
+        
+          
+              {% for event in recent_events %}
+              
+              {% else %}
+              
+              {% endfor %}
+            
+            
+              
+                User
+                Type
+                Payload
+                Time
+              
+            
+            
+                #{{ event.user_id }}
+                {{ event.event_type }}
+                {{ event.payload }}
+                {{ event.timestamp.strftime('%H:%M:%S') if event.timestamp else 'N/A' }}
+              
+                No events logged yet.
+              
+          
+        
+      
+    
+
+    
+    
+      
+        🤖 Mesh API Recommendations Audit
+      
+      
+        
+          
+              {% for rec in recent_recommendations %}
+              
+              {% else %}
+              
+              {% endfor %}
+            
+            
+              
+                User
+                Generated Narrative
+              
+            
+            
+                #{{ rec.user_id }}
+                {{ rec.narrative }}
+              
+                No recommendations generated yet.
+              
+          
+        
+      
+    
+
+  
+
+{% endblock %}
