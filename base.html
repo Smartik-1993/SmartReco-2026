@@ -1,19 +1,30 @@
-SmartReco - Agentic E-Commerce
-    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReco - Agentic E-Commerce</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+    <!-- Navbar -->
+    <nav class="border-b border-slate-800 bg-slate-950 px-6 py-4 flex justify-between items-center">
+        <a href="/" class="text-xl font-bold text-indigo-400">SmartReco AI 🛍️</a>
+        <div class="space-x-4 text-sm text-slate-300">
+            <span class="text-xs font-mono bg-slate-800 px-2 py-1 rounded">User ID: 1</span>
+            <a href="/" class="hover:text-white">Catalog</a>
+            <a href="/admin" class="hover:text-white">Admin Dashboard</a>
+        </div>
+    </nav>
 
-
-    
-        
-            🛍️ SmartReco
-            
-                Active Session User ID: {{ user_id }}
-            
-        
-    
-
-    
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto p-6">
         {% block content %}{% endblock %}
-    
+    </main>
 
-    
-        Powered by LangGraph, Mesh API, ChromaDB & FastAPI
+    <!-- Client Event Tracker -->
+    <script src="/static/js/tracker.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
