@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    ← Back to Catalog
+    
+    
+        {{ product.category }}
+    
+
+    {{ product.title }}
+    {{ product.description }}
+
+    
+        ${{ "%.2f"|format(product.price) }}
+        
+            Enroll Now
+        
+    
+
+{% endblock %}

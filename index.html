@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+    
+        
+        Search
+    
+
+    
+        
+            ⚡ Refresh AI Recommendations
+        
+    
+
+
+
+{% if narrative %}
+
+    
+        ✨ Agentic Recommendations
+    
+    "{{ narrative }}"
+
+    {% if recommended_products %}
+    
+        {% for p in recommended_products %}
+        
+            {{ p.category }}
+            {{ p.title }}
+            ${{ "%.2f"|format(p.price) }}
+        
+        {% endfor %}
+    
+    {% endif %}
+
+{% endif %}
+
+
+All Catalog Products
+
+    {% for p in products %}
+    
+        
+            {{ p.category }}
+            {{ p.title }}
+            {{ p.description }}
+        
+        
+            ${{ "%.2f"|format(p.price) }}
+            View Details
+        
+    
+    {% endfor %}
+
+{% endblock %}
